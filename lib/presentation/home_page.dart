@@ -1,7 +1,40 @@
 import 'package:flutter/material.dart';
+import 'add_edit_task_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  List<String> tasks = [];
+
+  void _addTask(String task) {
+    setState(() {
+      tasks.add(task);
+    });
+  }
+
+  void _removeTask(int index) {
+    setState(() {
+      tasks.removeAt(index);
+    });
+  }
+
+  Future<void> _navigateToAddEditTaskPage() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const AddEditTaskPage(taskId: ''),
+      ),
+    );
+
+    if (result != null) {
+      _addTask(result);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +60,7 @@ class HomePage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.only(right: 16.06),
             child: TextButton(
-              onPressed: () {
-                //хуйня будт работать
-              },
+              onPressed: _navigateToAddEditTaskPage,
               child: const Text(
                 'Create',
                 style: TextStyle(
@@ -40,7 +71,20 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: const Text('соси хуй ярославЧИК'),
+      body: ListView.builder(
+        itemCount: tasks.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(tasks[index]),
+            trailing: IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () {
+                _removeTask(index);
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 }
